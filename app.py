@@ -75,16 +75,21 @@ def recommended_books():
     if not data:
         abort(400, 'No data provided.')
     
-    user_id = int(data['user_id'])
-    n_books = int(data['n_books'])
+    user_id = int(data.get('user_id'))
+    n_books = int(data.get('n_books'))+1
 
     df_books = pd.read_csv('data/books.csv')
     df_clusters = pd.read_csv('data/ratings_with_clusters.csv')
+
+    if user_id not in df_clusters['user_id'].unique():
+        abort(400, f"User ID {user_id} not found.")
 
     recommendations = get_recommended_books(df=df_clusters, user_id=user_id, n_books=n_books)
 
     result = []
     for isbn in recommendations:
+        if isbn not in df_books['ISBN'].values:
+            continue
         book = df_books[df_books['ISBN'] == isbn].iloc[0]
         book_info = {
             'ISBN': str(isbn),
@@ -95,7 +100,7 @@ def recommended_books():
         }
         result.append(book_info)
 
-    return result
+    return jsonify(result)
 
 
 # Start app
