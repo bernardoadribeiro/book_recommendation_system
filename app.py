@@ -47,7 +47,7 @@ def hello():
     df_users = pd.read_csv('data/ratings_with_clusters.csv')
 
     user_ids = df_users['user_id'].unique().tolist()
-    return render_template('index.html', user_ids=user_ids)
+    return render_template('index.html', users=user_ids)
 
 @app.route('/books', methods=['GET'])
 def books():
@@ -75,8 +75,8 @@ def recommended_books():
     if not data:
         abort(400, 'No data provided.')
     
-    user_id = data['user_id']
-    n_books = data['n_books']
+    user_id = int(data['user_id'])
+    n_books = int(data['n_books'])
 
     df_books = pd.read_csv('data/books.csv')
     df_clusters = pd.read_csv('data/ratings_with_clusters.csv')

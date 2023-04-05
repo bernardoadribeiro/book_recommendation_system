@@ -4,13 +4,9 @@
 	<title>Recomendação de Livros</title>
 </head>
 <body>
-	<h1>Recomendação de livros</h1>
-	<label for="user_id">Usuário:</label>
-	<select id="user_id" name="user_id">
-		{% for user in users %}
-		<option value="{{ user }}">{{ user }}</option>
-		{% endfor %}
-	</select><br><br>
+	<h1>Recomendação de Livros</h1>
+	<label for="user_id">ID do Usuário:</label>
+	<input type="text" id="user_id" name="user_id">
 	<label for="num_books">Número de Livros:</label>
 	<input type="number" id="num_books" name="num_books" value="3">
 	<button onclick="getRecommendations()">Buscar</button>
@@ -30,7 +26,7 @@
 				success: function (data) {
 					var html = '<ul>';
 					$.each(data, function (index, book) {
-						html += '<br><br><li> <img src="'+book.Image_URL+'"/>' + book.ISBN + ' - '+book.Book_Title + ' - ' + book.Book_Author + ' - ' + book.Publisher + '</li>';
+						html += '<li> <img src="'+book.Image_URL+'"/>' + book.Book_Title + ' - ' + book.Book_Author + '</li>';
 					});
 					html += '</ul>';
 					$('#recommendations').html(html);
