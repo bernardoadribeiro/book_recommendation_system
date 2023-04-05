@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block head %} <title>Book recommendation</title> {% endblock %}
+
+{% block content %}
+    
+    <div class="row">
+        <div class="col-12">
+            <h1>Recomendação de Livros</h1>
+            <form id="form" method="POST">
+                <label for="user_id">Selecione o ID do usuário:</label>
+                <select name="user_id" id="user_id">
+                    {% for user_id in user_ids %}
+                        <option value="{{ user_id }}">{{ user_id }}</option>
+                    {% endfor %}
+                </select>
+                <br><br>
+                <label for="n_books">Quantidade de livros a serem recomendados:</label>
+                <input type="number" id="n_books" name="n_books" min="1" max="10" required>
+                <br><br>
+                <input type="submit" value="Buscar">
+            </form>
+        
+            {% if recommendations %}
+                <h2>Livros recomendados:</h2>
+                <ul>
+                    {% for book in recommendations %}
+                        <li>
+                            <img src="{{ book.Image_URL }}" alt="{{ book.Book_Title }}" width="100" height="150">
+                            <br>
+                            <strong>Título:</strong> {{ book.Book_Title }} <br>
+                            <strong>Autor:</strong> {{ book.Book_Author }} <br>
+                            <strong>Editora:</strong> {{ book.Publisher }} <br>
+                            <strong>ISBN:</strong> {{ book.ISBN }} <br>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        
+            <script>
+                const form = document.querySelector('#form');
+                form.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const user_id = form.user_id.value;
+                    const n_books = form.n_books.value;
+        
+                    const data = {user_id: user_id, n_books: n_books};
+        
+                    const response = await fetch('/books/recommendation/', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+        
+                    const recommendations = await response.json();
+                    console.log(recommendations);
+                    const recommendationsList = document.querySelector('#recommendations');
+                    recommendationsList.innerHTML = '';
+        
+                    for (let i = 0; i < recommendations.length; i++) {
+                        const book = recommendations[i];
+        
+                        const bookLi = document.createElement('li');
+                        bookLi.innerHTML = `
+                            <img src="${book.Image_URL}" alt="${book.Book_Title}" width="100" height="150"><br>
+                            <strong>Título:</strong> ${book.Book_Title} <br>
+                            <strong>Autor:</strong> ${book.Book_Author} <br>
+                            <strong>Editora:</strong> ${book.Publisher} <br>
+                            <strong>ISBN:</strong> ${book.ISBN} <br>
+                        `;
+        
+                        recommendationsList.appendChild(bookLi);
+                    }
+                });
+            </script>
+        </div>
+    </div>
+
+{% endblock %}
